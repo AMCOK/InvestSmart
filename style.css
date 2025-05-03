@@ -1,0 +1,115 @@
+/* General page styling */
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(to right, #1e3c72, #2a5298);
+  margin: 0;
+  padding: 0;
+  color: #222;
+}
+
+/* Header styling */
+header {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  padding: 20px;
+  text-align: center;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+/* Navigation buttons */
+nav {
+  text-align: center;
+  margin-top: 10px;
+}
+nav button {
+  margin: 8px;
+  padding: 10px 20px;
+  background-color: #00c9a7;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+nav button:hover {
+  background-color: #00b091;
+}
+
+/* Form containers */
+.form-section {
+  background-color: #ffffffcc;
+  border-radius: 15px;
+  padding: 30px;
+  max-width: 400px;
+  margin: 30px auto;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+input {
+  width: 100%;
+  padding: 12px;
+  margin: 12px 0;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+button {
+  padding: 12px;
+  width: 100%;
+  background-color: #28a745;
+  border: none;
+  color: white;
+  font-size: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+button:hover {
+  background-color: #218838;
+}
+
+/* Dashboard styling */
+#dashboard {
+  background-color: #ffffffee;
+  padding: 30px;
+  margin: 30px auto;
+  max-width: 900px;
+  border-radius: 15px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Investment options list */
+#investment-options li {
+  background-color: #e3f2fd;
+  padding: 15px;
+  margin: 10px 0;
+  border-radius: 8px;
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#investment-options button {
+  background-color: #007bff;
+  padding: 8px 14px;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  transition: background-color 0.3s ease;
+}
+#investment-options button:hover {
+  background-color: #0056b3;
+}
+
+/* Portfolio chart */
+#portfolio-chart {
+  margin-top: 30px;
+  padding: 20px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}

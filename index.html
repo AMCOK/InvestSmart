@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>InvestSmart Platform</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- Link to Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <header>
+    <h1>InvestSmart</h1>
+    <nav>
+      <button onclick="showForm('signup')">Create Account</button>
+      <button onclick="showForm('login')">Login</button>
+    </nav>
+  </header>
+
+  <!-- Create Account Form -->
+  <section id="signup-form" class="form-section">
+    <h2>Create Account</h2>
+    <form onsubmit="createAccount(event)">
+      <input type="text" id="name" placeholder="Full Name" required><br>
+      <input type="email" id="email" placeholder="Email" required><br>
+      <input type="password" id="password" placeholder="Password" required><br>
+      <button type="submit">Sign Up</button>
+    </form>
+  </section>
+
+  <!-- Login Form -->
+  <section id="login-form" class="form-section" style="display: none;">
+    <h2>Login</h2>
+    <form onsubmit="loginUser(event)">
+      <input type="email" id="login-email" placeholder="Email" required><br>
+      <input type="password" id="login-password" placeholder="Password" required><br>
+      <button type="submit">Login</button>
+    </form>
+  </section>
+
+  <!-- Dashboard (hidden initially) -->
+  <section id="dashboard" style="display: none;">
+    <h2>Welcome, <span id="user-name"></span>!</h2>
+    <p>Your Investment Portfolio:</p>
+    <div id="portfolio-summary">
+      <p>Investment Value: $<span id="portfolio-value">0</span></p>
+      <button onclick="addInvestment()">Add Investment</button>
+    </div>
+
+    <h3>Investment Options</h3>
+    <ul id="investment-options">
+      <li>
+        <span>Stock: Apple</span>
+        <button onclick="invest('Apple', 150)">Invest $150</button>
+      </li>
+      <li>
+        <span>Stock: Tesla</span>
+        <button onclick="invest('Tesla', 200)">Invest $200</button>
+      </li>
+      <li>
+        <span>Crypto: Bitcoin</span>
+        <button onclick="invest('Bitcoin', 500)">Invest $500</button>
+      </li>
+    </ul>
+
+    <p>Your Transaction History:</p>
+    <ul id="transaction-history"></ul>
+
+    <div id="portfolio-chart">
+      <h3>Portfolio Growth (Simulated)</h3>
+      <canvas id="portfolio-graph"></canvas>
+    </div>
+
+    <button onclick="logout()">Logout</button>
+  </section>
+
+  <script>
+    // Show forms: create account, login
+    function showForm(type) {
+      document.getElementById('signup-form').style.display = type === 'signup' ? 'block' : 'none';
+      document.getElementById('login-form').style.display = type === 'login' ? 'block' : 'none';
+      document.getElementById('dashboard').style.display = 'none'; // Hide dashboard
+    }
+
+    // Create Account functionality
+    function createAccount(event) {
+      event.preventDefault();
+      const name = document.getElementById("name").value;
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      // Store user info and initial data
+      localStorage.setItem("userName", name);
+      localStorage.setItem("userEmail", email);
+      localStorage.setItem("userPassword", password);
+      localStorage.setItem("portfolioValue", 0);
+      localStorage.setItem("transactions", JSON.stringify([]));
+      localStorage.setItem("portfolioHistory", JSON.stringify([0])); // Simulating portfolio history over time
+
+      alert("Account created for " + name);
+
+      showForm('login'); // Show login form after account creation
+    }
+
+    // Login functionality
+    function loginUser(event) {
+      event.preventDefault();
+      const email = document.getElementById("login-email").value;
+      const password = document.getElementById("login-password").value;
+
+      const savedEmail = localStorage.getItem("userEmail");
+      const savedPassword = localStorage.getItem("userPassword");
+
+      if (email === savedEmail && password === savedPassword) {
+        const savedName = localStorage.getItem("userName");
+        document.getElementById("user-name").textContent = savedName; // Show user's name on dashboard
+
+        // Update portfolio value and transactions
+        document.getElementById('portfolio-value').textContent = localStorage.getItem("portfolioValue");
+        const transactions = JSON.parse(localStorage.getItem("transactions"));
+        const transactionHistory = document.getElementById('transaction-history');
+        transactionHistory.innerHTML = transactions.map(transaction => `<li>${transaction}</li>`).join("");
+
+        // Simulate portfolio history (graph data)
+        const portfolioHistory = JSON.parse(localStorage.getItem("portfolioHistory"));
+        generatePortfolioChart(portfolioHistory);
+
+        document.getElementById('login-form').style.display = 'none'; // Hide login form
+        document.getElementById('dashboard').style.display = 'block'; // Show dashboard
+      } else {
+        alert("Invalid credentials. Try again.");
+      }
+    }
+
+    // Logout functionality
+    function logout() {
+      localStorage.clear(); // Clear saved data
+      showForm('login'); // Show login form again
+    }
+
+    // Add manual investment
+    function addInvestment() {
+      const amount = prompt("Enter investment amount:");
+      if (amount) {
+        const newValue = parseFloat(localStorage.getItem("portfolioValue")) + parseFloat(amount);
+        localStorage.setItem("portfolioValue", newValue);
+
+        const transaction = `Added $${amount} investment`;
+        const transactions = JSON.parse(localStorage.getItem("transactions"));
+        transactions.push(transaction);
+        localStorage.setItem("transactions", JSON.stringify(transactions));
+
+        // Update dashboard
+        document.getElementById('portfolio-value').textContent = newValue;
+        const transactionHistory = document.getElementById('transaction-history');
+        transactionHistory.innerHTML = transactions.map(transaction => `<li>${transaction}</li>`).join("");
+
+        // Update portfolio history
+        const portfolioHistory = JSON.parse(localStorage.getItem("portfolioHistory"));
+        portfolioHistory.push(newValue);
+        localStorage.setItem("portfolioHistory", JSON.stringify(portfolioHistory));
+
+        // Re-generate chart
+        generatePortfolioChart(portfolioHistory);
+      }
+    }
+
+    // Investment via available options (stocks, crypto, etc.)
+    function invest(stockName, amount) {
+      const newValue = parseFloat(localStorage.getItem("portfolioValue")) + amount;
+      localStorage.setItem("portfolioValue", newValue);
+
+      const transaction = `Invested $${amount} in ${stockName}`;
+      const transactions = JSON.parse(localStorage.getItem("transactions"));
+      transactions.push(transaction);
+      localStorage.setItem("transactions", JSON.stringify(transactions));
+
+      // Update dashboard
+      document.getElementById('portfolio-value').textContent = newValue;
+      const transactionHistory = document.getElementById('transaction-history');
+      transactionHistory.innerHTML = transactions.map(transaction => `<li>${transaction}</li>`).join("");
+
+      // Update portfolio history
+      const portfolioHistory = JSON.parse(localStorage.getItem("portfolioHistory"));
+      portfolioHistory.push(newValue);
+      localStorage.setItem("portfolioHistory", JSON.stringify(portfolioHistory));
+
+      // Re-generate chart
+      generatePortfolioChart(portfolioHistory);
+    }
+
+    // Generate Portfolio Growth Chart using Chart.js
+    function generatePortfolioChart(portfolioHistory) {
+      const ctx = document.getElementById('portfolio-graph').getContext('2d');
+
+      const data = {
+        labels: portfolioHistory.map((_, index) => `Day ${index + 1}`),
+        datasets: [{
+          label: 'Portfolio Value Over Time',
+          data: portfolioHistory,
+          fill: false,
+          borderColor: '#38bdf8',
+          tension: 0.1
+        }]
+      };
+
+      const config = {
+        type: 'line',
+        data: data,
+        options: {
+          scales: {
+            x: {
+              title: {
+                display: true,
+                text: 'Time (Days)'
+              }
+            },
+            y: {
+              title: {
+                display: true,
+                text: 'Portfolio Value ($)'
+              }
+            }
+          }
+        }
+      };
+
+      const myChart = new Chart(ctx, config);
+    }
+  </script>
+</body>
+</html>
